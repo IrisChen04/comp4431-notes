@@ -42,9 +42,99 @@ nav_order: 3
 **Definition**: Searches through all possible solutions **without additional knowledge** about the search space.
 
 #### Breadth-First Search (BFS)
-- Expands the **shallowest unexpanded node** first
-- Explores level by level
-- Uses a **queue** data structure
+
+<img src="/assets/images/bfs_eg1.png" alt="BFS Example" style="max-width: 700px; width: 80%; height: auto;">
+
+##### Definition and Strategy
+
+Breadth-First Search (BFS) is a systematic uninformed search algorithm that expands nodes in order of their depth from the root. The algorithm operates by:
+
+1. Expanding the root node first
+2. Expanding all successors of the root node
+3. Expanding all successors of those nodes, proceeding level by level
+
+The algorithm expands the **shallowest unexpanded node** first, ensuring complete exploration of each depth level before proceeding to the next.
+
+---
+
+##### Implementation
+
+**Data Structure**: FIFO (First-In-First-Out) Queue
+
+- Newly generated nodes (deeper levels) are added to the back of the queue
+- Older nodes (shallower levels) at the front are expanded first
+- This ensures level-by-level traversal of the search space
+
+**Optimization Techniques**:
+
+1. **Reached Set**: Maintains a set of reached states rather than a mapping, as any path to a previously reached state cannot be better when all actions have equal cost
+2. **Early Goal Test**: Tests whether a node is a goal state immediately upon generation, rather than waiting until it is selected for expansion
+
+---
+
+##### Applicability
+
+BFS is most appropriate for problems where:
+- All actions have uniform cost
+- The shallowest solution is desired
+- Complete exploration is required
+
+---
+
+##### Complexity Analysis
+
+Let $$b$$ denote the branching factor (average number of successors per state) and $$d$$ denote the depth of the shallowest goal node.
+
+**Node Generation Pattern**:
+
+For a uniform tree structure:
+- Level 0: $$1$$ node (root)
+- Level 1: $$b$$ nodes
+- Level 2: $$b^2$$ nodes
+- Level $$k$$: $$b^k$$ nodes
+
+Total nodes generated to depth $$d$$:
+
+$$N = 1 + b + b^2 + b^3 + \cdots + b^d = O(b^d)$$
+
+**Formal Complexity**:
+
+| Property            | Value          | Justification                                                                 |
+|:--------------------|:---------------|:------------------------------------------------------------------------------|
+| **Completeness**    | Yes            | Guaranteed to find a solution if one exists, even in infinite state spaces    |
+| **Optimality**      | Yes*           | Finds solution with minimum number of actions when all actions have equal cost|
+| **Time Complexity** | $$O(b^d)$$     | Must generate all nodes up to depth $$d$$                                     |
+| **Space Complexity**| $$O(b^d)$$     | All generated nodes must be maintained in memory                              |
+
+*Optimality holds only when all step costs are equal.
+{: .note }
+
+
+##### Practical Limitations
+
+The exponential space complexity presents severe practical constraints:
+
+**Example**: Consider a problem with:
+- Branching factor $$b = 10$$
+- Processing rate: $$10^6$$ nodes/second
+- Memory requirement: 1 KB per node
+
+| Depth $$d$$ | Time Required | Memory Required  |
+|:------------|:--------------|:-----------------|
+| 10          | ~3 hours      | ~10 terabytes    |
+| 14          | ~3.5 years    | ~10 petabytes    |
+
+
+##### Critical Observations
+
+1. **Memory Bottleneck**: Space complexity is typically more restrictive than time complexity in practice
+2. **Scalability**: Exponential complexity renders BFS impractical for large search spaces
+3. **Motivation for Informed Search**: The limitations of BFS demonstrate the necessity for heuristic-guided search algorithms (e.g., A*) that can reduce the effective branching factor and make larger problem instances tractable
+
+
+##### Conclusion
+
+While BFS guarantees completeness and optimality (under uniform cost conditions), its exponential space requirements limit its applicability to small-scale problems. This fundamental limitation motivates the development of informed search strategies that leverage domain knowledge to guide exploration more efficiently.
 
 #### Depth-First Search (DFS)
 
