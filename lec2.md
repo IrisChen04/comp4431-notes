@@ -47,6 +47,11 @@ nav_order: 3
 - Uses a **queue** data structure
 
 #### Depth-First Search (DFS)
+
+![My image description](/assets/images/dfs_eg1.png)
+
+
+
 - Expands the **deepest unexpanded node** first
 - Explores as far as possible along each branch before backtracking
 - Uses a **stack** or recursion
