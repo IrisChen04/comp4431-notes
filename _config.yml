@@ -48,3 +48,8 @@ exclude:
   - README.md
   - node_modules/
   - vendor/
+
+math: katex
+
+mermaid:
+  version: "9.4.3"
