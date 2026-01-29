@@ -43,7 +43,8 @@ nav_order: 3
 
 #### Breadth-First Search (BFS)
 
-<img src="/assets/images/bfs_eg1.png" alt="BFS Example" style="max-width: 700px; width: 80%; height: auto;">
+![My image description](/assets/images/bfs_eg1.png){:style="width: 50%;"}
+
 
 ##### Definition and Strategy
 
@@ -55,7 +56,6 @@ Breadth-First Search (BFS) is a systematic uninformed search algorithm that expa
 
 The algorithm expands the **shallowest unexpanded node** first, ensuring complete exploration of each depth level before proceeding to the next.
 
----
 
 ##### Implementation
 
@@ -70,7 +70,6 @@ The algorithm expands the **shallowest unexpanded node** first, ensuring complet
 1. **Reached Set**: Maintains a set of reached states rather than a mapping, as any path to a previously reached state cannot be better when all actions have equal cost
 2. **Early Goal Test**: Tests whether a node is a goal state immediately upon generation, rather than waiting until it is selected for expansion
 
----
 
 ##### Applicability
 
@@ -79,7 +78,6 @@ BFS is most appropriate for problems where:
 - The shallowest solution is desired
 - Complete exploration is required
 
----
 
 ##### Complexity Analysis
 
@@ -135,6 +133,8 @@ The exponential space complexity presents severe practical constraints:
 ##### Conclusion
 
 While BFS guarantees completeness and optimality (under uniform cost conditions), its exponential space requirements limit its applicability to small-scale problems. This fundamental limitation motivates the development of informed search strategies that leverage domain knowledge to guide exploration more efficiently.
+
+---
 
 #### Depth-First Search (DFS)
 
