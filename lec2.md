@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Lecture 1
-permalink: /lec1/
+title: Lecture 2
+permalink: /lec2/
 ---
 
 # Lec 2
