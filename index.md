@@ -1,6 +1,7 @@
 ---
 layout: home
 title: Home
+nav_order: 0
 ---
 
 # Welcome to COMP4431 Course Notes

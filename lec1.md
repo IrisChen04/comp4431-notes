@@ -1,7 +1,7 @@
 ---
-layout: page
+layout: default
 title: Lecture 1
-permalink: /lec1/
+nav_order: 1
 ---
 
 # Lec 1 

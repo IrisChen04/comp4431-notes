@@ -4,11 +4,17 @@ description: My notes for COMP4431 - Multimedia Computing
 author: Iris Chen
 email: your.email@connect.polyu.hk
 
-# Build settings
+# Theme
 remote_theme: just-the-docs/just-the-docs
-# Navigation
+
+# URL settings
+baseurl: "/comp4431-notes"
+url: "https://irischen04.github.io"
+
+# Navigation and search
 nav_enabled: true
 search_enabled: true
+heading_anchors: true
 
 # Color scheme
 color_scheme: light
@@ -17,22 +23,30 @@ color_scheme: light
 markdown: kramdown
 kramdown:
   parse_block_html: true
-# URL settings
-baseurl: "/comp4431-notes"
-url: "https://irischen04.github.io"
+  syntax_highlighter: rouge
 
-# Navigation
-header_pages:
-  - lec1.md
-  - lec2.md
+# Mermaid support
+mermaid:
+  version: "10.6.1"
 
 # Plugins
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-github-metadata
 
 # Exclude files
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
+  - node_modules/
+  - vendor/
+
+# Just the Docs specific settings
+# Enable back to top button
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Footer content
+footer_content: "Copyright &copy; 2025 Iris Chen. COMP4431 Course Notes."
