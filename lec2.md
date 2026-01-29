@@ -48,7 +48,7 @@ nav_order: 3
 
 #### Depth-First Search (DFS)
 
-![My image description](/assets/images/dfs_eg1.png)
+![My image description](/assets/images/dfs_eg1.png){:style="width: 50%;"}
 
 
 
