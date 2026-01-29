@@ -9,8 +9,8 @@ This site contains my lecture notes for **COMP4431 - Multimedia Computing** at T
 
 ## 📚 Lecture Notes
 
-- [Lecture 1](lec1.html)
-- [Lecture 2](lec2.html)
+- [Lecture 1](lec1.md)
+- [Lecture 2](lec2.md)
 
 ## 📖 About
 
