@@ -1,0 +1,29 @@
+# Site settings
+title: COMP4431 Course Notes
+description: My notes for COMP4431 - Multimedia Computing
+author: Iris Chen
+email: your.email@connect.polyu.hk
+
+# Build settings
+theme: minima
+markdown: kramdown
+
+# URL settings
+baseurl: "/comp4431-notes"
+url: "https://irischen04.github.io"
+
+# Navigation
+header_pages:
+  - lec1.md
+  - lec2.md
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
