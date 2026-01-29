@@ -43,7 +43,7 @@ nav_order: 3
 
 #### Breadth-First Search (BFS)
 
-![My image description](/assets/images/bfs_eg1.png){:style="width: 50%;"}
+![My image description](/assets/images/bfs_eg1.png){:style="width: 110%;"}
 
 
 ##### Definition and Strategy
