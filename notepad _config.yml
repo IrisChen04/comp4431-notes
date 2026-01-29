@@ -5,9 +5,18 @@ author: Iris Chen
 email: your.email@connect.polyu.hk
 
 # Build settings
-theme: minima
-markdown: kramdown
+remote_theme: just-the-docs/just-the-docs
+# Navigation
+nav_enabled: true
+search_enabled: true
 
+# Color scheme
+color_scheme: light
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  parse_block_html: true
 # URL settings
 baseurl: "/comp4431-notes"
 url: "https://irischen04.github.io"
