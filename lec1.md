@@ -4,6 +4,8 @@ title: Lecture 1
 nav_order: 2
 permalink: /lec1/
 ---
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
 
 # Lecture 1: Concepts of Generative AI
 
