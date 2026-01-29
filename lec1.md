@@ -13,7 +13,7 @@ permalink: /lec1/
 
 ### Visual Breakdown
 
-<div class="mermaid">
+```mermaid
 graph TD
     A[Generative AI] --> B[Generative]
     A --> C[AI]
@@ -25,12 +25,7 @@ graph TD
     style C fill:#E74C3C,stroke:#C0392B,stroke-width:2px,color:#fff
     style D fill:#ECF0F1,stroke:#95A5A6,stroke-width:2px
     style E fill:#ECF0F1,stroke:#95A5A6,stroke-width:2px
-</div>
-
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true });
-</script>
+```
 
 ---
 
