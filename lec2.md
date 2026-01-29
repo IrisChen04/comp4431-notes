@@ -92,6 +92,7 @@ Where:
 4. **Optimality**: Does it always find the least-cost solution?
 
 ### Comparison:
+
 | Strategy | Type | Optimal? |
 |----------|------|----------|
 | BFS | Uninformed | Yes (for unweighted graphs) |

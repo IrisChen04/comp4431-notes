@@ -32,8 +32,9 @@ footer_content: "Copyright &copy; 2025 Iris Chen. COMP4431 Course Notes."
 # Markdown settings
 markdown: kramdown
 kramdown:
+  input: GFM
+  hard_wrap: false
   parse_block_html: true
-  syntax_highlighter: rouge
 
 # Plugins
 plugins:
