@@ -11,13 +11,23 @@ remote_theme: just-the-docs/just-the-docs
 baseurl: "/comp4431-notes"
 url: "https://irischen04.github.io"
 
+# Color scheme
+color_scheme: light
+
 # Navigation and search
 nav_enabled: true
 search_enabled: true
 heading_anchors: true
 
-# Color scheme
-color_scheme: light
+# 侧边栏设置
+nav_sort: case_insensitive
+
+# Back to top button
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Footer
+footer_content: "Copyright &copy; 2025 Iris Chen. COMP4431 Course Notes."
 
 # Markdown settings
 markdown: kramdown
@@ -25,15 +35,10 @@ kramdown:
   parse_block_html: true
   syntax_highlighter: rouge
 
-# Mermaid support
-mermaid:
-  version: "10.6.1"
-
 # Plugins
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
-  - jekyll-github-metadata
 
 # Exclude files
 exclude:
@@ -42,11 +47,3 @@ exclude:
   - README.md
   - node_modules/
   - vendor/
-
-# Just the Docs specific settings
-# Enable back to top button
-back_to_top: true
-back_to_top_text: "Back to top"
-
-# Footer content
-footer_content: "Copyright &copy; 2025 Iris Chen. COMP4431 Course Notes."
