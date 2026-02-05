@@ -25,6 +25,7 @@ nav_order: 4
 **What it means**: The inference process is **triggered by available data**, not by a specific goal.
 
 **Contrast with Backward Chaining**:
+
 | Forward Chaining | Backward Chaining |
 |:-----------------|:------------------|
 | **Data → Goal** | **Goal → Data** |
@@ -521,6 +522,849 @@ Design a forward chaining system for a **traffic light controller**:
 
 
 ## Backward Chaining
+
+
+
+**Backward Chaining** is a **goal-driven** inference method that starts with a hypothesis (goal) and works backward to find evidence (facts) that support it.
+
+
+### **1. Goal-Driven Reasoning**
+
+**What it means**: The inference process is **triggered by a query/goal**, not by available data.
+
+**Process**:
+```
+Goal: "Does patient have influenza?"
+    ↓
+Ask: "What rules conclude influenza?"
+    ↓
+Find: Rule 1 (IF nassal_congestion AND viremia THEN influenza)
+    ↓
+New Sub-goals: "nassal_congestion?" AND "viremia?"
+    ↓
+Recursively prove each sub-goal...
+```
+
+---
+
+### **2. Top-Down Approach**
+
+**Visualization** (from your medical example):
+
+```
+Level 0:  [GOAL: Influenza?] ← START HERE
+              ↓
+Level 1:  [nassal_congestion?] [viremia?]
+              ↓                    ↓
+Level 2:  [runny_nose?]     [fever? achiness? cough?]
+              ↓                    ↓
+Level 3:  (Check facts)     [temperature>100? headache?]
+              ↓                    ↓
+Level 4:                    (Check facts)
+```
+
+The system **works downward** from goal to facts.
+
+---
+
+### **3. Depth-First Search Strategy**
+
+**Critical distinction**: Backward chaining explores **one path completely** before trying alternatives.
+
+**Example from your slides**:
+
+**Knowledge Base**:
+```
+R1: IF nassal_congestion AND viremia THEN influenza
+R2: IF runny_nose THEN nassal_congestion
+R3: IF body_aches THEN achiness
+R4: IF temperature > 100 THEN fever
+R5: IF headache THEN achiness
+R6: IF fever AND achiness AND cough THEN viremia
+```
+
+**Goal**: Prove influenza
+
+**DFS Path**:
+1. Try to prove influenza → need nassal_congestion AND viremia
+2. **First**, fully explore nassal_congestion path:
+   - Try R2 → need runny_nose
+   - Check fact: runny_nose ✅ FOUND
+   - nassal_congestion ✅ PROVED
+3. **Then**, explore viremia path:
+   - Try R6 → need fever AND achiness AND cough
+   - Check cough ✅ FOUND
+   - Try to prove fever → need temperature > 100
+   - Check temperature = 101.7 ✅ FOUND
+   - Try to prove achiness → need headache
+   - Check headache ✅ FOUND
+   - viremia ✅ PROVED
+4. Both sub-goals proved → influenza ✅ PROVED
+
+**NOT breadth-first** (which would check all sub-goals at same level simultaneously)
+
+---
+
+### **4. Possibility of Infinite Loops**
+
+**Critical problem**: Backward chaining can get stuck in cycles!
+
+**Example of problematic rules**:
+```
+R1: IF A THEN B
+R2: IF B THEN C
+R3: IF C THEN A  ← Creates cycle!
+
+Goal: Prove A
+→ Try R3: need C
+  → Try R2: need B
+    → Try R1: need A  ← LOOP! Back to original goal
+```
+
+**Solution strategies**:
+1. **Track visited goals** (goal stack)
+2. **Limit recursion depth**
+3. **Detect cycles** and backtrack
+
+---
+
+### 🔄 **Backward Chaining Algorithm (Formal)**
+
+ **Pseudocode**:
+
+```python
+function BACKWARD_CHAINING(KB, goal, facts, visited=set()):
+    """
+    KB: Knowledge Base (set of rules)
+    goal: Goal to prove
+    facts: Known facts
+    visited: Goals already being explored (cycle detection)
+    """
+    
+    # Base case 1: Goal is already a known fact
+    if goal in facts:
+        print(f"✅ {goal} is a known fact")
+        return True
+    
+    # Base case 2: Cycle detection
+    if goal in visited:
+        print(f"⚠️ Cycle detected: {goal} already being explored")
+        return False
+    
+    # Add goal to visited set
+    visited.add(goal)
+    
+    # Find all rules that can prove this goal
+    candidate_rules = [r for r in KB if r.conclusion == goal]
+    
+    if not candidate_rules:
+        print(f"❌ No rules can prove {goal}")
+        visited.remove(goal)
+        return False
+    
+    # Try each rule (DFS)
+    for rule in candidate_rules:
+        print(f"🔍 Trying {rule} to prove {goal}")
+        
+        # Try to prove all premises
+        all_premises_satisfied = True
+        
+        for premise in rule.premises:
+            # Recursively prove each premise
+            if not BACKWARD_CHAINING(KB, premise, facts, visited):
+                all_premises_satisfied = False
+                break
+        
+        if all_premises_satisfied:
+            print(f"✅ {goal} proved using {rule}")
+            visited.remove(goal)
+            return True
+    
+    # No rule succeeded
+    print(f"❌ Failed to prove {goal}")
+    visited.remove(goal)
+    return False
+```
+
+---
+
+### 📊 **Detailed Analysis of Your Slide Examples**
+
+ **Example 1: Medical Diagnosis (Backward Chaining)**
+
+Let me trace through your slide's example in complete detail:
+
+**Knowledge Base**:
+```
+R1: IF nassal_congestion AND viremia THEN influenza
+R2: IF runny_nose THEN nassal_congestion
+R3: IF body_aches THEN achiness
+R4: IF temperature > 100 THEN fever
+R5: IF headache THEN achiness
+R6: IF fever AND achiness AND cough THEN viremia
+```
+
+**Facts**:
+```
+- runny_nose = True
+- temperature = 101.7
+- headache = True
+- cough = True
+```
+
+**Goal**: Prove influenza
+
+---
+
+ **Execution Trace (Matching Your Slide)**:
+
+**Cycle 1**:
+- **Goal resolving**: influenza
+- **Rule fired**: R1
+- **Goals created**: nassal_congestion, viremia
+- **Premise satisfied**: nil (none yet)
+- **Action**: Push nassal_congestion and viremia onto goal stack
+
+---
+
+**Cycle 2**:
+- **Goal resolving**: nassal_congestion (first sub-goal)
+- **Rule fired**: R2
+- **Goals created**: runny_nose, viremia (viremia still pending)
+- **Premise satisfied**: runny_nose ✅ (found in facts)
+- **Result**: nassal_congestion ✅ PROVED
+
+---
+
+**Cycle 3**:
+- **Goal resolving**: viremia (second sub-goal)
+- **Rule fired**: R6
+- **Goals created**: fever, achiness, cough
+- **Premise satisfied**: cough ✅ (found in facts)
+- **Action**: Push fever and achiness onto goal stack
+
+---
+
+**Cycle 4**:
+- **Goal resolving**: fever
+- **Rule fired**: R4
+- **Goals created**: temperature > 100, achiness (still pending)
+- **Premise satisfied**: temperature > 100 ✅ (101.7 > 100)
+- **Result**: fever ✅ PROVED
+
+---
+
+**Cycle 5** (First attempt):
+- **Goal resolving**: achiness
+- **Rule fired**: R3
+- **Goals created**: body_aches, achiness
+- **Premise satisfied**: nil ❌ (body_aches not in facts)
+- **Result**: R3 FAILED, try alternative rule
+
+---
+
+**Cycle 5** (Second attempt):
+- **Goal resolving**: achiness
+- **Rule fired**: R5
+- **Goals created**: headache
+- **Premise satisfied**: headache ✅ (found in facts)
+- **Result**: achiness ✅ PROVED
+
+---
+
+**Cycle 6**:
+- **All sub-goals satisfied**:
+  - nassal_congestion ✅
+  - viremia ✅ (fever ✅, achiness ✅, cough ✅)
+- **Conclusion**: influenza ✅ **PROVED**
+
+---
+
+ **Key Insights from Medical Example**:
+
+1. **Depth-first exploration**: Fully resolved nassal_congestion before moving to viremia
+2. **Backtracking**: When R3 failed to prove achiness, system tried R5
+3. **Efficient**: Only checked rules relevant to the goal (didn't check irrelevant rules)
+4. **Goal-directed**: Never derived facts that don't contribute to proving influenza
+
+---
+
+ 📊 **Detailed Analysis: Query Example (Q2)**
+
+Now let's trace both Forward and Backward Chaining for your query example:
+
+**Knowledge Base**:
+<img src="/assets/images/forward-back.png" alt="Forward and Backward Chaining" style="max-width: 700px; width: 80%; height: auto;">
+
+```
+1. A (fact)
+2. B (fact)
+3. C (fact)
+4. A ∧ B ⇒ D
+5. B ∧ C ⇒ E
+6. A ∧ C ⇒ F
+7. A ∧ F ⇒ G
+8. D ∧ F ⇒ K
+9. G ∧ K ⇒ Q1
+10. E ⇒ H
+11. H ∧ C ⇒ Q2
+```
+
+**Query**: Q2
+
+---
+
+### **Forward Chaining Trace** (from your slide):
+
+#### **Iteration 1** (Image a):
+- **Check all rules with satisfied premises**
+- R4: A ✅ AND B ✅ → **Derive D**
+- R5: B ✅ AND C ✅ → **Derive E**
+- R6: A ✅ AND C ✅ → **Derive F**
+- **New facts**: {D, E, F}
+- **Working memory**: {A, B, C, D, E, F}
+
+#### **Iteration 2** (Image b):
+- R7: A ✅ AND F ✅ → **Derive G**
+- R8: D ✅ AND F ✅ → **Derive K**
+- R10: E ✅ → **Derive H**
+- **New facts**: {G, K, H}
+- **Working memory**: {A, B, C, D, E, F, G, K, H}
+
+#### **Iteration 3** (Image c):
+- R9: G ✅ AND K ✅ → **Derive Q1**
+- R11: H ✅ AND C ✅ → **Derive Q2** ✅ **QUERY FOUND!**
+- **New facts**: {Q1, Q2}
+- **Final working memory**: {A, B, C, D, E, F, G, K, H, Q1, Q2}
+
+**Result**: Q2 found after 3 iterations
+**Rules fired**: R4, R5, R6, R7, R8, R10, R9, R11 (8 rules)
+**Facts derived**: D, E, F, G, K, H, Q1, Q2 (8 facts)
+
+---
+
+### **Backward Chaining Trace** (from your slide):
+
+#### **Cycle 1** (Image a):
+- **Goal**: Q2
+- **Find rule**: R11 (H ∧ C ⇒ Q2)
+- **Sub-goals**: H, C
+- **Check C**: C ✅ in facts
+- **New goal**: H
+
+#### **Cycle 2** (Image b):
+- **Goal**: H
+- **Find rule**: R10 (E ⇒ H)
+- **Sub-goal**: E
+- **New goal**: E
+
+#### **Cycle 3** (Image c):
+- **Goal**: E
+- **Find rule**: R5 (B ∧ C ⇒ E)
+- **Sub-goals**: B, C
+- **Check B**: B ✅ in facts
+- **Check C**: C ✅ in facts
+- **Result**: E ✅ PROVED
+
+#### **Cycle 4** (Image d):
+- **Backtrack to H**: E ✅ proved → H ✅ PROVED
+- **Backtrack to Q2**: H ✅ AND C ✅ → Q2 ✅ **PROVED**
+
+**Result**: Q2 proved in 4 cycles
+**Rules fired**: R11, R10, R5 (3 rules only!)
+**Facts derived**: E, H, Q2 (3 facts only!)
+
+---
+
+### **Comparison: Forward vs Backward for Q2**
+
+| Metric | Forward Chaining | Backward Chaining |
+|:--------|:------------------|:-------------------|
+| **Rules fired** | 8 rules | 3 rules |
+| **Facts derived** | 8 facts | 3 facts |
+| **Iterations** | 3 iterations | 4 cycles |
+| **Efficiency** | 37.5% (3/8 relevant) | 100% (all relevant) |
+| **Irrelevant facts** | D, F, G, K, Q1 | None |
+| **Best for** | "What can I conclude?" | "Is Q2 true?" |
+
+**Key Insight**: For goal-directed queries, **backward chaining is much more efficient**! ✅
+
+---
+
+## 🎓 **Advanced Exercises**
+
+### **Exercise 1: Trace Backward Chaining with Backtracking** ⭐⭐⭐⭐
+
+**Knowledge Base**:
+```
+R1: IF A AND B THEN G
+R2: IF C THEN G
+R3: IF D THEN A
+R4: IF E THEN A
+R5: IF F THEN B
+```
+
+**Facts**: {C, E}
+
+**Goal**: Prove G
+
+**Tasks**:
+1. **Trace backward chaining** showing ALL attempts (including failed paths)
+2. **Show backtracking** when a path fails
+3. **Draw the search tree** with successful and failed branches
+4. **Count total rule checks** (including failed attempts)
+
+<details>
+<summary>💡 Click for Solution</summary>
+
+**Trace**:
+
+```
+Goal: G
+├─ Try R1: need A AND B
+│  ├─ Sub-goal: A
+│  │  ├─ Try R3: need D
+│  │  │  └─ Check D: ❌ NOT in facts → FAIL
+│  │  ├─ Try R4: need E
+│  │  │  └─ Check E: ✅ in facts → A PROVED
+│  │  └─ A ✅
+│  ├─ Sub-goal: B
+│  │  ├─ Try R5: need F
+│  │  │  └─ Check F: ❌ NOT in facts → FAIL
+│  │  └─ B ❌ FAILED
+│  └─ R1 FAILED (B cannot be proved)
+│
+├─ Try R2: need C
+│  └─ Check C: ✅ in facts → G PROVED ✅
+│
+└─ G ✅ PROVED via R2
+```
+
+**Search Tree**:
+```
+                G (goal)
+               / \
+              /   \
+            R1     R2
+           / \      |
+          A   B     C ✅
+         /|   |
+       R3 R4  R5
+        | |   |
+        D E✅  F
+        ❌    ❌
+```
+
+**Statistics**:
+- Total rule checks: 6 (R1, R3, R4, R5, R2)
+- Successful path: R2 → C
+- Failed attempts: R1 (via R5), R3
+- Backtracking points: 2 (after R3 fails, after R5 fails)
+
+**Key Insight**: Backward chaining explores multiple paths and **backtracks** when a path fails. The order of rules matters for efficiency!
+
+</details>
+
+---
+
+### **Exercise 2: Cycle Detection** ⭐⭐⭐⭐⭐
+
+**Knowledge Base with cycles**:
+```
+R1: IF A THEN B
+R2: IF B THEN C
+R3: IF C THEN D
+R4: IF D THEN B  ← Creates cycle B→C→D→B
+R5: IF E THEN A
+```
+
+**Facts**: {E}
+
+**Goal**: Prove D
+
+**Tasks**:
+1. **Trace backward chaining WITHOUT cycle detection** - what happens?
+2. **Implement cycle detection** using a goal stack
+3. **Show how the algorithm detects and handles the cycle**
+4. **Modify KB to break the cycle** - what's the minimal change?
+
+<details>
+<summary>💡 Click for Solution</summary>
+
+**Without Cycle Detection**:
+```
+Goal: D
+├─ Try R3: need C
+│  ├─ Try R2: need B
+│  │  ├─ Try R1: need A
+│  │  │  ├─ Try R5: need E
+│  │  │  │  └─ Check E: ✅ → A PROVED
+│  │  │  └─ A ✅
+│  │  └─ B ✅
+│  └─ C ✅
+└─ D ✅ PROVED
+
+Alternative path (if we tried R4):
+Goal: D
+├─ Try R4: need B
+│  ├─ Try R1: need A ... (same as above)
+│  └─ OR Try R4: need B  ← INFINITE LOOP!
+```
+
+**With Cycle Detection**:
+```python
+Goal Stack: []
+Visited: {}
+
+1. Push D onto stack: [D]
+   Try R3: need C
+   
+2. Push C onto stack: [D, C]
+   Try R2: need B
+   
+3. Push B onto stack: [D, C, B]
+   Try R1: need A
+   
+4. Push A onto stack: [D, C, B, A]
+   Try R5: need E
+   Check E: ✅
+   Pop A: [D, C, B]
+   
+5. B proved, pop B: [D, C]
+6. C proved, pop C: [D]
+7. D proved, pop D: []
+
+If we tried R4 at step 3:
+3. Push B onto stack: [D, C, B]
+   Try R4: need B
+   Check: B already in stack! ⚠️ CYCLE DETECTED
+   Skip R4, try next rule (R1)
+```
+
+**Minimal Fix**:
+Remove R4 or add a condition to break the cycle:
+```
+R4: IF D AND NOT(visited_B) THEN B
+```
+
+</details>
+
+---
+
+### **Exercise 3: Compare Efficiency** ⭐⭐⭐⭐
+
+**Knowledge Base** (same as your Q2 example):
+```
+1. A, 2. B, 3. C
+4. A ∧ B ⇒ D
+5. B ∧ C ⇒ E
+6. A ∧ C ⇒ F
+7. A ∧ F ⇒ G
+8. D ∧ F ⇒ K
+9. G ∧ K ⇒ Q1
+10. E ⇒ H
+11. H ∧ C ⇒ Q2
+```
+
+**Tasks**:
+1. **Trace backward chaining for Q1** (instead of Q2)
+2. **Compare with forward chaining** for Q1
+3. **Which is more efficient for Q1? Why?**
+4. **Generalize**: When is backward chaining more efficient?
+
+<details>
+<summary>💡 Click for Solution</summary>
+
+**Backward Chaining for Q1**:
+```
+Goal: Q1
+├─ R9: need G AND K
+   ├─ Sub-goal: G
+   │  ├─ R7: need A AND F
+   │  │  ├─ Check A: ✅
+   │  │  ├─ Sub-goal: F
+   │  │  │  ├─ R6: need A AND C
+   │  │  │  │  ├─ Check A: ✅
+   │  │  │  │  └─ Check C: ✅
+   │  │  │  └─ F ✅
+   │  │  └─ G ✅
+   │  └─ G ✅
+   ├─ Sub-goal: K
+   │  ├─ R8: need D AND F
+   │  │  ├─ Sub-goal: D
+   │  │  │  ├─ R4: need A AND B
+   │  │  │  │  ├─ Check A: ✅
+   │  │  │  │  └─ Check B: ✅
+   │  │  │  └─ D ✅
+   │  │  └─ F already proved ✅
+   │  └─ K ✅
+   └─ Q1 ✅ PROVED
+```
+
+**Rules fired**: R9, R7, R6, R8, R4 (5 rules)
+**Facts derived**: F, G, D, K, Q1 (5 facts)
+
+**Forward Chaining for Q1** (from your slide):
+- Rules fired: R4, R5, R6, R7, R8, R10, R9, R11 (8 rules)
+- Facts derived: D, E, F, G, K, H, Q1, Q2 (8 facts)
+- Irrelevant: E, H, Q2 (not needed for Q1)
+
+**Efficiency Comparison**:
+
+| Query | Forward (rules) | Backward (rules) | Winner |
+|-------|----------------|------------------|--------|
+| Q1 | 8 rules | 5 rules | Backward (62.5%) |
+| Q2 | 8 rules | 3 rules | Backward (37.5%) |
+
+**Generalization**:
+- **Backward chaining is more efficient when**:
+  - Goal is specific and well-defined
+  - Many rules exist that don't lead to the goal
+  - KB is large with many irrelevant rules
+  
+- **Forward chaining is more efficient when**:
+  - Multiple goals need to be found
+  - Most facts are relevant
+  - System is reactive (monitoring, triggering)
+
+</details>
+
+---
+
+### **Exercise 4: Real-World Application** ⭐⭐⭐⭐⭐
+
+**Scenario**: Design a **Loan Approval System** using backward chaining.
+
+**Goal**: Approve_Loan
+
+**Requirements**:
+- 15+ rules covering: credit score, income, debt ratio, employment
+- Handle multiple paths to approval
+- Show complete backward chaining trace
+- Compare efficiency with forward chaining
+
+**Example Rules**:
+```
+R1: IF Good_Credit AND Stable_Income THEN Approve_Loan
+R2: IF Excellent_Credit THEN Approve_Loan
+R3: IF Credit_Score > 700 THEN Good_Credit
+R4: IF Credit_Score > 800 THEN Excellent_Credit
+R5: IF Employment_Years > 2 AND Salary > 50K THEN Stable_Income
+R6: IF Debt_Ratio < 0.3 AND Salary > 40K THEN Stable_Income
+...
+```
+
+**Test Case**:
+```
+Facts:
+- Credit_Score = 750
+- Employment_Years = 3
+- Salary = 60K
+- Debt_Ratio = 0.25
+```
+
+**Tasks**:
+1. **Design complete rule set** (15+ rules)
+2. **Trace backward chaining** for Approve_Loan goal
+3. **Show all backtracking** when paths fail
+4. **Compare with forward chaining**: Which derives fewer facts?
+5. **Handle conflicts**: What if multiple rules approve but with different terms?
+
+<details>
+<summary>💡 Click for Hints</summary>
+
+**Rule Categories**:
+- **Credit rules**: Score thresholds, history, defaults
+- **Income rules**: Salary levels, stability, sources
+- **Debt rules**: Ratios, types, payment history
+- **Employment rules**: Years, industry, stability
+- **Collateral rules**: Assets, value, liquidity
+
+**Expected Challenges**:
+- Multiple paths to approval (which to try first?)
+- Failed paths requiring backtracking
+- Conflicting evidence (good credit but high debt)
+- Efficiency: backward chaining should check fewer rules
+
+**Optimization Ideas**:
+- Order rules by likelihood (try most common approvals first)
+- Cache sub-goal results (if Good_Credit proved once, don't re-prove)
+- Early termination (stop at first approval path)
+
+</details>
+
+---
+
+## 🔬 **Deep Comparison: Forward vs Backward Chaining**
+
+### **Comprehensive Comparison Table**:
+
+| Aspect | Forward Chaining | Backward Chaining |
+|--------|------------------|-------------------|
+| **Direction** | Data → Goal | Goal → Data |
+| **Trigger** | New facts arrive | Query is asked |
+| **Search** | Breadth-first | Depth-first |
+| **Efficiency** | Derives all possible facts | Only derives goal-relevant facts |
+| **Best for** | Monitoring, reactive systems, multiple goals | Specific queries, theorem proving |
+| **Memory** | High (stores all derived facts) | Lower (only goal-relevant facts) |
+| **Loops** | No loops (monotonic) | Possible loops (needs cycle detection) |
+| **Backtracking** | No backtracking | Yes, when path fails |
+| **Completeness** | Finds all conclusions | Finds proof for specific goal |
+| **Example** | "What diseases could this patient have?" | "Does this patient have influenza?" |
+
+---
+
+### **When to Use Each**:
+
+**Use Forward Chaining when**:
+✅ You want to find **all possible conclusions** from given facts
+✅ System is **reactive** (monitoring, alerts, automation)
+✅ Facts arrive **incrementally** over time
+✅ Multiple goals need to be checked
+✅ Example: Smart home automation, network monitoring, production systems
+
+**Use Backward Chaining when**:
+✅ You have a **specific goal** to prove
+✅ KB is **large** with many irrelevant rules
+✅ You want **efficient goal-directed reasoning**
+✅ Explanation is important (trace shows proof path)
+✅ Example: Medical diagnosis, loan approval, legal reasoning, theorem proving
+
+---
+
+## 💡 **Advanced Topics**
+
+### **1. Hybrid Approaches**
+
+**Best of both worlds**: Combine forward and backward chaining!
+
+**Bi-directional Search**:
+- Start forward chaining from facts
+- Start backward chaining from goal
+- Meet in the middle
+
+**Example**:
+```
+Facts: {A, B, C}
+Goal: Z
+
+Forward: A,B,C → D,E,F → G,H,I
+Backward: Z ← Y ← X ← I
+
+Meet at I: Connect forward and backward paths!
+```
+
+---
+
+### **2. Prolog and Logic Programming**
+
+**Prolog** is a programming language based on backward chaining!
+
+**Example**:
+```prolog
+% Facts
+parent(tom, bob).
+parent(tom, liz).
+parent(bob, ann).
+
+% Rules
+grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
+
+% Query (backward chaining)
+?- grandparent(tom, ann).
+% Prolog traces:
+% Try grandparent(tom, ann)
+% Need: parent(tom, Y) AND parent(Y, ann)
+% Find: parent(tom, bob) → Y = bob
+% Check: parent(bob, ann) ✅
+% Result: true
+```
+
+---
+
+### **3. Explanation Generation**
+
+**Advantage of backward chaining**: Easy to generate explanations!
+
+**Example**:
+```
+Query: "Why is the patient diagnosed with influenza?"
+
+Explanation (from backward chaining trace):
+1. Patient has influenza BECAUSE:
+   - Patient has nassal congestion AND
+   - Patient has viremia
+   
+2. Patient has nassal congestion BECAUSE:
+   - Patient has runny nose (observed symptom)
+   
+3. Patient has viremia BECAUSE:
+   - Patient has fever AND
+   - Patient has achiness AND
+   - Patient has cough (observed symptom)
+   
+4. Patient has fever BECAUSE:
+   - Temperature = 101.7°F > 100°F
+   
+5. Patient has achiness BECAUSE:
+   - Patient has headache (observed symptom)
+```
+
+This **proof tree** is automatically generated by backward chaining! ✅
+
+---
+
+## 🎯 **Exam-Style Questions**
+
+### **Question 1** (15 points):
+Given the medical diagnosis KB from your slides, trace backward chaining to prove "viremia" given facts: {temperature=103, headache=True, cough=True}. Show all sub-goals and rule firings.
+
+---
+
+### **Question 2** (20 points):
+Compare forward and backward chaining for the following scenario:
+- KB: 20 rules
+- Facts: 5 initial facts
+- Goal: Prove one specific conclusion
+
+Which is more efficient? Justify with complexity analysis and example trace.
+
+---
+
+### **Question 3** (25 points):
+Design a backward chaining system for **academic advising**:
+- Goal: "Can student graduate?"
+- Rules: Credit requirements, GPA, prerequisites, major requirements
+- Show complete trace with backtracking
+- Handle conflicts (e.g., missing prerequisites)
+
+---
+
+## 📚 **Key Takeaways**
+
+1. ✅ **Backward chaining is goal-driven**: Starts with hypothesis, finds supporting evidence
+2. ✅ **Uses depth-first search**: Explores one path completely before trying alternatives
+3. ✅ **More efficient for specific queries**: Only derives goal-relevant facts
+4. ✅ **Requires cycle detection**: Can get stuck in loops without proper handling
+5. ✅ **Best for**: Diagnosis, query answering, theorem proving, explanation generation
+6. ✅ **Contrast with forward chaining**: Different efficiency trade-offs depending on use case
+
+---
+
+## 🚀 **Practice Recommendations**
+
+1. **Trace both methods** on the same KB to see efficiency differences
+2. **Implement backward chaining** in Python with cycle detection
+3. **Study Prolog** to see backward chaining in action
+4. **Design hybrid systems** that use both forward and backward chaining
+5. **Practice explaining proofs** generated by backward chaining
+
+---
+
+**You now have expert-level understanding of both Forward and Backward Chaining!** 🎓
+
+The key is knowing **when to use each method** based on your problem requirements. Practice the exercises above to master both techniques! 🌟
+
 Game
 MiniMax Algorithm
 Alpha beta Pruning
