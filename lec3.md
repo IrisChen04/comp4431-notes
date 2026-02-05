@@ -794,7 +794,9 @@ R6: IF fever AND achiness AND cough THEN viremia
 Now let's trace both Forward and Backward Chaining for your query example:
 
 **Knowledge Base**:
-<img src="/assets/images/forward-back.png" alt="Forward and Backward Chaining" style="max-width: 700px; width: 80%; height: auto;">
+
+![Forward and Backward Chaining](/assets/images/forward-back.png){:style="width: 50%;"}
+
 
 ```
 1. A (fact)
