@@ -138,7 +138,8 @@ While BFS guarantees completeness and optimality (under uniform cost conditions)
 
 #### Depth-First Search (DFS)
 
-![My image description](/assets/images/dfs_eg1.png){:style="width: 50%;"}
+![Example 1 of DFS](/assets/images/dfs_eg1.png){:style="width: 50%;"}
+![Example 2 of DFS](/assets/images/dfs_eg2.png){:style="width: 100%;"}
 
 
 
