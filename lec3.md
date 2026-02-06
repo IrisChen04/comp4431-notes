@@ -8,7 +8,95 @@ nav_order: 4
 # Expert System and Games
 
 #   Knowledge based agent (KBA)
-##  Knowledge base and representation
+## Knowledge-based Agent
+
+**Definition**
+
+An intelligent agent needs knowledge about the world for taking decisions and reasoning to act efficiently.
+
+**Knowledge-based agents (KBA)** are those agents who have the capability of:
+
+- Maintaining an internal state of knowledge
+- Reasoning over that knowledge
+- Updating their knowledge after observations
+- Taking action
+
+These agents can represent the world with some formal representation and act intelligently.
+
+## Architecture of KBAs
+
+KBAs are composed of **2 main parts**:
+
+1. **Knowledge Base**
+2. **Inference Engine**
+
+
+![KBA Architecture](/assets/images/kba-architecture.png){:style="width: 100%;"}
+
+
+The diagram shows the interaction flow:
+- Environment provides input to the Inference Engine
+- Inference Engine queries and updates the Knowledge Base
+- Learning component updates the KB based on new information
+- Inference Engine produces output actions
+
+## Knowledge Base
+
+**Knowledge base**: A central component/repository of all knowledge in the KBA
+
+Key characteristics:
+
+- A collection of sentences (here 'sentence' is a technical term and it is not identical to sentence in natural language like English)
+- These sentences are expressed in a so-called **knowledge representation language**
+
+**Construction Methods**:
+
+In practice, the knowledge bases are built based on human/expert experience.
+
+It can also be learned by the agent itself, but this requires more complex techniques like machine learning or reinforcement learning.
+{: .note }
+
+##Inference Rules
+
+**One common way of knowledge base representation**
+
+Also referred to as **Production Rules**
+{: .label .label-blue }
+
+**Structure**:
+
+A production rule consists of (condition, decision) pairs which mean **"if condition then decision"**
+
+The "decision" can also be the condition for another rule, not necessarily a real action to perform.
+{: .note }
+
+**Rule Firing**:
+
+We say a rule is **fired** if its condition is fulfilled.
+
+##### Example: Bus Riding Rules
+
+A KB can have many rules, e.g.:
+
+| Rule | Condition | Decision |
+|:-----|:----------|:---------|
+| R1 | IF (at bus stop AND bus arrives) | THEN (get into the bus) |
+| R2 | IF (on the bus AND paid AND empty seat) | THEN (sit down) |
+| R3 | IF (on bus AND unpaid) | THEN (pay charges) |
+| R4 | IF (on the bus AND sit down) | THEN (play mobile phone) |
+| R5 | IF (bus arrives at destination) | THEN (get down from the bus) |
+
+**Inference Chain**:
+
+As one rule is fired, it may trigger another rule to be fired. There can be a **chain reaction** (referred to as **inference chain**)!
+{: .important }
+
+For example:
+1. At bus stop + bus arrives → R1 fires → get into bus
+2. On bus + unpaid → R3 fires → pay charges
+3. On bus + paid + empty seat → R2 fires → sit down
+4. On bus + sit down → R4 fires → play mobile phone
+5. Bus arrives at destination → R5 fires → get down from bus
 
 # Inference Engine
 ##  Forward Chaining
@@ -893,9 +981,9 @@ Now let's trace both Forward and Backward Chaining for your query example:
 
 ---
 
-## 🎓 **Advanced Exercises**
+### 🎓 **Advanced Exercises**
 
-### **Exercise 1: Trace Backward Chaining with Backtracking** ⭐⭐⭐⭐
+ **Exercise 1: Trace Backward Chaining with Backtracking** ⭐⭐⭐⭐
 
 **Knowledge Base**:
 ```
@@ -969,7 +1057,7 @@ Goal: G
 
 ---
 
-### **Exercise 2: Cycle Detection** ⭐⭐⭐⭐⭐
+ **Exercise 2: Cycle Detection** ⭐⭐⭐⭐⭐
 
 **Knowledge Base with cycles**:
 ```
@@ -1053,7 +1141,7 @@ R4: IF D AND NOT(visited_B) THEN B
 
 ---
 
-### **Exercise 3: Compare Efficiency** ⭐⭐⭐⭐
+ **Exercise 3: Compare Efficiency** ⭐⭐⭐⭐
 
 **Knowledge Base** (same as your Q2 example):
 ```
@@ -1133,7 +1221,7 @@ Goal: Q1
 
 ---
 
-### **Exercise 4: Real-World Application** ⭐⭐⭐⭐⭐
+ **Exercise 4: Real-World Application** ⭐⭐⭐⭐⭐
 
 **Scenario**: Design a **Loan Approval System** using backward chaining.
 
@@ -1197,9 +1285,9 @@ Facts:
 
 ---
 
-## 🔬 **Deep Comparison: Forward vs Backward Chaining**
+### 🔬 **Deep Comparison: Forward vs Backward Chaining**
 
-### **Comprehensive Comparison Table**:
+ **Comprehensive Comparison Table**:
 
 | Aspect | Forward Chaining | Backward Chaining |
 |--------|------------------|-------------------|
@@ -1234,139 +1322,752 @@ Facts:
 
 ---
 
-## 💡 **Advanced Topics**
 
-### **1. Hybrid Approaches**
+# Game
 
-**Best of both worlds**: Combine forward and backward chaining!
+Here's the content transcribed into Just the Docs markdown format:
 
-**Bi-directional Search**:
-- Start forward chaining from facts
-- Start backward chaining from goal
-- Meet in the middle
+```markdown
+### What Makes Games Special in AI?
+
+**Multiagent Environment**:
+
+- Multiple agents (players) interact
+- Each agent's actions affect others' outcomes
+- Strategic reasoning required: "If I do X, opponent will do Y, so I should do Z"
+
+**Why Games are Ideal for AI**:
+
+| Property | Explanation | Advantage for AI |
+|:---------|:------------|:-----------------|
+| **Easy to represent** | Discrete states (board positions) | Simple data structures |
+| **Limited actions** | Small action space per state | Tractable search |
+| **Precise rules** | Deterministic outcomes | No ambiguity |
+| **Clear objectives** | Win/lose/draw | Easy to evaluate |
+
+Real-world analogy: Games are like **controlled experiments** for AI - they have all the complexity of strategic reasoning without the messiness of real-world uncertainty.
+{: .note }
+
+### Formulating Games as Search Problems
+
+#### Game Formulation Components
+
+##### 1. Initial State $$S_0$$
+
+**Definition**: The starting configuration of the game.
+
+**Examples**:
+
+- **Chess**: Standard starting position with all pieces
+- **Tic-Tac-Toe**: Empty 3×3 board
+- **Go**: Empty 19×19 board
+
+**Representation**:
+
+```python
+# Tic-Tac-Toe initial state
+initial_state = [
+    [' ', ' ', ' '],
+    [' ', ' ', ' '],
+    [' ', ' ', ' ']
+]
+```
+
+##### 2. Player(s) Function
+
+**Definition**: Returns which player has the move in state $$s$$.
+
+**Why it matters**: Games alternate between players (usually), so we need to track whose turn it is.
+
+**Implementation**:
+
+```python
+def player(state):
+    """Returns 'X' or 'O' depending on whose turn it is"""
+    x_count = count_marks(state, 'X')
+    o_count = count_marks(state, 'O')
+    
+    if x_count == o_count:
+        return 'X'  # X goes first
+    else:
+        return 'O'
+```
+
+Key insight: In Tic-Tac-Toe, if X and O have equal counts, it's X's turn. Otherwise, it's O's turn.
+{: .note }
+
+##### 3. Actions(s) Function
+
+**Definition**: Returns the set of **legal moves** available in state $$s$$.
+
+**Example - Tic-Tac-Toe**:
+
+```python
+def actions(state):
+    """Returns set of (row, col) tuples for empty cells"""
+    possible_actions = set()
+    
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == ' ':
+                possible_actions.add((i, j))
+    
+    return possible_actions
+
+# Example:
+# State:  X | O |  
+#        -----------
+#           |   |  
+#        -----------
+#           |   |  
+# Actions: {(0,2), (1,0), (1,1), (1,2), (2,0), (2,1), (2,2)}
+```
+
+**Chess**: Much more complex! Must consider piece movement rules, checks, pins, castling rights, en passant, promotion, etc.
+
+##### 4. Result(s, a) Function
+
+**Definition**: The **transition model** - returns the new state after taking action $$a$$ in state $$s$$.
+
+**Critical property**: Must be **deterministic** (no randomness in classic games).
+
+**Implementation**:
+
+```python
+def result(state, action):
+    """Returns new state after making action"""
+    # Create a deep copy to avoid modifying original state
+    new_state = copy.deepcopy(state)
+    
+    row, col = action
+    current_player = player(state)
+    
+    # Make the move
+    new_state[row][col] = current_player
+    
+    return new_state
+```
+
+Important: Always create a **new state** - never modify the original! This allows backtracking in search.
+{: .important }
+
+##### 5. Terminal-Test(s) Function
+
+**Definition**: Returns `True` if the game is over in state $$s$$.
+
+**Game-ending conditions for Tic-Tac-Toe**:
+
+```python
+def terminal_test(state):
+    """Check if game is over"""
+    # Check for winner
+    if winner(state) is not None:
+        return True
+    
+    # Check for draw (board full)
+    if all(cell != ' ' for row in state for cell in row):
+        return True
+    
+    return False
+
+def winner(state):
+    """Returns 'X', 'O', or None"""
+    # Check rows
+    for row in state:
+        if row[0] == row[1] == row[2] != ' ':
+            return row[0]
+    
+    # Check columns
+    for col in range(3):
+        if state[0][col] == state[1][col] == state[2][col] != ' ':
+            return state[0][col]
+    
+    # Check diagonals
+    if state[0][0] == state[1][1] == state[2][2] != ' ':
+        return state[0][0]
+    if state[0][2] == state[1][1] == state[2][0] != ' ':
+        return state[0][2]
+    
+    return None
+```
+
+##### 6. Utility(s, p) Function
+
+**Definition**: Returns the **payoff** for player $$p$$ when game ends in terminal state $$s$$.
+
+**Also called**: Objective function, Payoff function, Value function
+
+**Standard values**:
+
+| Outcome | Utility for Winner | Utility for Loser | Utility for Draw |
+|:--------|:-------------------|:------------------|:-----------------|
+| **Win** | +1 | -1 | 0 |
+| **Loss** | -1 | +1 | 0 |
+| **Draw** | 0 | 0 | 0 |
+
+**Implementation**:
+
+```python
+def utility(state, player):
+    """Returns utility value for player in terminal state"""
+    w = winner(state)
+    
+    if w == player:
+        return 1  # Win
+    elif w is None:
+        return 0  # Draw
+    else:
+        return -1  # Loss
+```
+
+**Key property**: **Zero-sum game** - one player's gain is another's loss:
+
+$$\text{Utility}(s, \text{MAX}) + \text{Utility}(s, \text{MIN}) = 0$$
+
+### Tic-Tac-Toe Example - Deep Dive
+
+**Current State**:
+
+```
+X | O |  
+---------
+  |   |  
+---------
+  |   |  
+```
+
+**Evaluation Function** (for non-terminal states):
+
+$$e(p) = (\text{open lines for player}) - (\text{open lines for opponent})$$
+
+Where "open line" = row, column, or diagonal that could still result in three-in-a-row.
+
+#### Detailed Calculation
+
+**For X (the player)**:
+
+**Rows**:
+- Row 0: `X | O | _` → ❌ Blocked by O
+- Row 1: `_ | _ | _` → ✅ Open for X
+- Row 2: `_ | _ | _` → ✅ Open for X
+
+**Columns**:
+- Col 0: `X | _ | _` → ✅ Open for X
+- Col 1: `O | _ | _` → ❌ Blocked by O
+- Col 2: `_ | _ | _` → ✅ Open for X
+
+**Diagonals**:
+- Main diagonal: `X | _ | _` → ✅ Open for X
+- Anti-diagonal: `_ | _ | _` → ✅ Open for X
+
+**Total for X**: 2 + 2 + 2 = **6 open lines**
+
+**For O (the opponent)**:
+
+**Rows**:
+- Row 0: `X | O | _` → ❌ Blocked by X
+- Row 1: `_ | _ | _` → ✅ Open for O
+- Row 2: `_ | _ | _` → ✅ Open for O
+
+**Columns**:
+- Col 0: `X | _ | _` → ❌ Blocked by X
+- Col 1: `O | _ | _` → ✅ Open for O
+- Col 2: `_ | _ | _` → ✅ Open for O
+
+**Diagonals**:
+- Main diagonal: `X | _ | _` → ❌ Blocked by X
+- Anti-diagonal: `_ | _ | _` → ✅ Open for O
+
+**Total for O**: 2 + 2 + 1 = **5 open lines**
+
+**Final Evaluation**:
+
+$$e(X) = 6 - 5 = 1$$
+
+**Interpretation**: X has a **slight advantage** (one more winning opportunity than O).
+
+#### Why This Heuristic Works
+
+1. **Captures strategic value**: More open lines = more winning chances
+2. **Simple to compute**: $$O(1)$$ for 3×3 board
+3. **Admissible**: Reflects actual game position
+4. **Symmetric**: Works for both players
+
+**Limitation**: Doesn't consider **threats** (lines with 2 marks) which are more valuable than lines with 1 mark.
+
+**Better heuristic**:
+
+$$e(p) = 3 \times (\text{lines with 2 marks}) + 1 \times (\text{lines with 1 mark}) - \text{same for opponent}$$
+
+### Game Playing Strategy - Minimax Algorithm
+
+#### Core Idea
+
+"Maximize your winning possibility assuming the opponent will try to minimize it"
+{: .text-green-300 }
+
+This is the essence of **adversarial search**.
+
+#### Minimax Principle
+
+**Two types of players**:
+
+- **MAX player**: Tries to maximize utility (you)
+- **MIN player**: Tries to minimize utility (opponent)
+
+**Recursive definition**:
+
+$$\text{Minimax}(s) = \begin{cases}
+\text{Utility}(s) & \text{if Terminal-Test}(s) \\
+\max_{a \in \text{Actions}(s)} \text{Minimax}(\text{Result}(s, a)) & \text{if Player}(s) = \text{MAX} \\
+\min_{a \in \text{Actions}(s)} \text{Minimax}(\text{Result}(s, a)) & \text{if Player}(s) = \text{MIN}
+\end{cases}$$
+
+#### Minimax Algorithm (Formal)
+
+```python
+def minimax(state):
+    """Returns the optimal move for current player"""
+    
+    if terminal_test(state):
+        return utility(state, MAX_PLAYER)
+    
+    if player(state) == MAX_PLAYER:
+        return max_value(state)
+    else:
+        return min_value(state)
+
+def max_value(state):
+    """MAX player tries to maximize utility"""
+    if terminal_test(state):
+        return utility(state, MAX_PLAYER)
+    
+    v = -infinity
+    for action in actions(state):
+        v = max(v, min_value(result(state, action)))
+    
+    return v
+
+def min_value(state):
+    """MIN player tries to minimize utility"""
+    if terminal_test(state):
+        return utility(state, MAX_PLAYER)
+    
+    v = +infinity
+    for action in actions(state):
+        v = min(v, max_value(result(state, action)))
+    
+    return v
+```
+
+#### Minimax Decision
+
+To actually **choose a move**, we need to track which action leads to the best value:
+
+```python
+def minimax_decision(state):
+    """Returns the best action for current player"""
+    
+    if player(state) == MAX_PLAYER:
+        best_value = -infinity
+        best_action = None
+        
+        for action in actions(state):
+            value = min_value(result(state, action))
+            if value > best_value:
+                best_value = value
+                best_action = action
+        
+        return best_action
+    
+    else:  # MIN player
+        best_value = +infinity
+        best_action = None
+        
+        for action in actions(state):
+            value = max_value(result(state, action))
+            if value < best_value:
+                best_value = value
+                best_action = action
+        
+        return best_action
+```
+
+#### Minimax Example - Tic-Tac-Toe
+
+**Current state (X to move)**:
+
+```
+X | O | X
+---------
+O | X |  
+---------
+  |   | O
+```
+
+**Available actions**: (2, 0), (2, 1)
+
+**Minimax tree**:
+
+```
+                    Current State (MAX)
+                    /              \
+            Action (2,0)        Action (2,1)
+                /                    \
+        X | O | X            X | O | X
+        O | X |              O | X |  
+        X |   | O            O |   | O
+        (MIN's turn)         (MIN's turn)
+            /|\                  /|\
+          ...                  ...
+```
+
+**Evaluation**:
+- Action (2, 0): Leads to X winning → Utility = +1
+- Action (2, 1): Leads to draw or O winning → Utility ≤ 0
+
+**Minimax decision**: Choose (2, 0) ✅
+
+#### Properties of Minimax
+
+| Property | Description |
+|:---------|:------------|
+| **Complete** | Yes (if tree is finite) |
+| **Optimal** | Yes (against optimal opponent) |
+| **Time Complexity** | $$O(b^m)$$ where $$b$$ = branching factor, $$m$$ = max depth |
+| **Space Complexity** | $$O(bm)$$ for DFS implementation |
+
+**Problem**: Exponential time complexity!
+{: .label .label-red }
 
 **Example**:
+- Chess: $$b \approx 35$$, $$m \approx 100$$ → $$35^{100}$$ positions!
+- Go: $$b \approx 250$$, $$m \approx 150$$ → Completely intractable!
+
+**Solution**: Alpha-Beta Pruning ✂️
+
+### Alpha-Beta Pruning
+
+#### Core Idea
+
+"Ignore the unwanted portion of the search tree"
+{: .text-green-300 }
+
+If you already know a move is worse than a previously examined move, you don't need to fully evaluate it!
+
+#### Key Concepts
+
+**Alpha (α)**: The best value MAX can guarantee so far (lower bound for MAX)
+
+**Beta (β)**: The best value MIN can guarantee so far (upper bound for MIN)
+
+**Pruning conditions**:
+- **At MAX node**: If $$v \geq \beta$$, prune (MIN won't let us get here)
+- **At MIN node**: If $$v \leq \alpha$$, prune (MAX has better options elsewhere)
+
+#### Alpha-Beta Algorithm
+
+```python
+def alpha_beta_search(state):
+    """Returns best action using alpha-beta pruning"""
+    
+    def max_value(state, alpha, beta):
+        if terminal_test(state):
+            return utility(state, MAX_PLAYER)
+        
+        v = -infinity
+        for action in actions(state):
+            v = max(v, min_value(result(state, action), alpha, beta))
+            
+            if v >= beta:
+                return v  # β cutoff (prune)
+            
+            alpha = max(alpha, v)
+        
+        return v
+    
+    def min_value(state, alpha, beta):
+        if terminal_test(state):
+            return utility(state, MAX_PLAYER)
+        
+        v = +infinity
+        for action in actions(state):
+            v = min(v, max_value(result(state, action), alpha, beta))
+            
+            if v <= alpha:
+                return v  # α cutoff (prune)
+            
+            beta = min(beta, v)
+        
+        return v
+    
+    # Start search
+    best_value = -infinity
+    best_action = None
+    alpha = -infinity
+    beta = +infinity
+    
+    for action in actions(state):
+        value = min_value(result(state, action), alpha, beta)
+        if value > best_value:
+            best_value = value
+            best_action = action
+        alpha = max(alpha, value)
+    
+    return best_action
 ```
-Facts: {A, B, C}
-Goal: Z
 
-Forward: A,B,C → D,E,F → G,H,I
-Backward: Z ← Y ← X ← I
+#### Alpha-Beta Example
 
-Meet at I: Connect forward and backward paths!
+**Game tree**:
+
+```
+                    MAX
+                   /   \
+                  /     \
+               MIN       MIN
+              / | \     / | \
+             3  12 8   2  4  6
 ```
 
----
+**Without pruning** (Minimax):
+- Evaluate all 6 leaf nodes
+- MIN left chooses 3
+- MIN right chooses 2
+- MAX chooses max(3, 2) = 3
 
-### **2. Prolog and Logic Programming**
+**With alpha-beta pruning**:
 
-**Prolog** is a programming language based on backward chaining!
-
-**Example**:
-```prolog
-% Facts
-parent(tom, bob).
-parent(tom, liz).
-parent(bob, ann).
-
-% Rules
-grandparent(X, Z) :- parent(X, Y), parent(Y, Z).
-
-% Query (backward chaining)
-?- grandparent(tom, ann).
-% Prolog traces:
-% Try grandparent(tom, ann)
-% Need: parent(tom, Y) AND parent(Y, ann)
-% Find: parent(tom, bob) → Y = bob
-% Check: parent(bob, ann) ✅
-% Result: true
+```
+Step 1: MAX node, α=-∞, β=+∞
+  ├─ Explore left MIN child
+  
+Step 2: MIN left, α=-∞, β=+∞
+  ├─ Evaluate first child: 3
+  │  β = min(+∞, 3) = 3
+  │  
+  ├─ Evaluate second child: 12
+  │  v = min(3, 12) = 3
+  │  β still = 3
+  │  
+  ├─ Evaluate third child: 8
+  │  v = min(3, 8) = 3
+  │  Return 3 to MAX
+  
+Step 3: Back at MAX, α = max(-∞, 3) = 3
+  ├─ Explore right MIN child
+  
+Step 4: MIN right, α=3, β=+∞
+  ├─ Evaluate first child: 2
+  │  v = 2
+  │  Check: v (2) <= α (3)? YES! ✂️ PRUNE!
+  │  Don't evaluate remaining children (4, 6)
+  │  Return 2 to MAX
+  
+Step 5: MAX chooses max(3, 2) = 3
 ```
 
----
+**Result**: Only evaluated 4 nodes instead of 6! Saved 33% of work.
 
-### **3. Explanation Generation**
+#### Alpha-Beta Pruning Efficiency
 
-**Advantage of backward chaining**: Easy to generate explanations!
+**Best case** (perfect move ordering):
+- Time complexity: $$O(b^{m/2})$$
+- Effectively **doubles the search depth**!
+- Example: If you could search 4 plies with minimax, you can search 8 plies with alpha-beta
 
-**Example**:
+**Worst case** (terrible move ordering):
+- Time complexity: $$O(b^m)$$ (no better than minimax)
+
+**Average case** (random ordering):
+- Time complexity: $$O(b^{3m/4})$$
+
+Key insight: **Move ordering matters!**
+{: .important }
+
+**Move ordering heuristics**:
+1. **Killer moves**: Moves that caused cutoffs in sibling nodes
+2. **History heuristic**: Moves that caused cutoffs frequently
+3. **MVV-LVA** (chess): Most Valuable Victim - Least Valuable Aggressor
+4. **Principal Variation**: Follow the best line from previous search
+
+### Evaluation Function Deep Dive
+
+#### Why We Need Evaluation Functions
+
+**Problem**: Can't search to terminal states in complex games!
+- Chess: $$10^{120}$$ possible games
+- Go: $$10^{170}$$ possible games
+
+**Solution**: Use **evaluation function** to estimate utility of non-terminal states.
+
+#### Properties of Good Evaluation Functions
+
+| Property | Description | Example |
+|:---------|:------------|:--------|
+| **Correlation** | Should correlate with winning probability | Material advantage in chess |
+| **Efficiency** | Fast to compute | $$O(1)$$ or $$O(n)$$ |
+| **Monotonicity** | Better positions have higher values | Consistent ordering |
+| **Granularity** | Distinguish between similar positions | Fine-grained differences |
+
+#### Evaluation Function Examples
+
+**Chess - Simple material count**:
+
+$$e(s) = 9Q + 5R + 3B + 3N + 1P - (\text{opponent's material})$$
+
+Where: Q=Queen, R=Rook, B=Bishop, N=Knight, P=Pawn
+
+**Chess - Advanced evaluation** (used in Stockfish):
+
+```python
+def evaluate_chess(state):
+    score = 0
+    
+    # Material
+    score += material_balance(state)
+    
+    # Piece-square tables (positional value)
+    score += piece_square_value(state)
+    
+    # Pawn structure
+    score += evaluate_pawns(state)
+    
+    # King safety
+    score += king_safety(state)
+    
+    # Mobility (number of legal moves)
+    score += mobility(state)
+    
+    # Control of center
+    score += center_control(state)
+    
+    return score
 ```
-Query: "Why is the patient diagnosed with influenza?"
 
-Explanation (from backward chaining trace):
-1. Patient has influenza BECAUSE:
-   - Patient has nassal congestion AND
-   - Patient has viremia
-   
-2. Patient has nassal congestion BECAUSE:
-   - Patient has runny nose (observed symptom)
-   
-3. Patient has viremia BECAUSE:
-   - Patient has fever AND
-   - Patient has achiness AND
-   - Patient has cough (observed symptom)
-   
-4. Patient has fever BECAUSE:
-   - Temperature = 101.7°F > 100°F
-   
-5. Patient has achiness BECAUSE:
-   - Patient has headache (observed symptom)
+**Tic-Tac-Toe**:
+
+$$e(p) = (\text{open lines for player}) - (\text{open lines for opponent})$$
+
+**Implementation**:
+
+```python
+def evaluate_tictactoe(state, player):
+    """Evaluation function for Tic-Tac-Toe"""
+    
+    def count_open_lines(state, mark):
+        count = 0
+        
+        # Check rows
+        for row in state:
+            if opponent_mark not in row:
+                count += 1
+        
+        # Check columns
+        for col in range(3):
+            column = [state[row][col] for row in range(3)]
+            if opponent_mark not in column:
+                count += 1
+        
+        # Check diagonals
+        main_diag = [state[i][i] for i in range(3)]
+        if opponent_mark not in main_diag:
+            count += 1
+        
+        anti_diag = [state[i][2-i] for i in range(3)]
+        if opponent_mark not in anti_diag:
+            count += 1
+        
+        return count
+    
+    opponent = 'O' if player == 'X' else 'X'
+    
+    player_lines = count_open_lines(state, player)
+    opponent_lines = count_open_lines(state, opponent)
+    
+    return player_lines - opponent_lines
 ```
 
-This **proof tree** is automatically generated by backward chaining! ✅
+**Go - Territory estimation**:
 
----
+```python
+def evaluate_go(state, player):
+    score = 0
+    
+    # Captured stones
+    score += captured_stones(state, player) * 1.0
+    
+    # Territory (controlled empty intersections)
+    score += estimate_territory(state, player) * 0.5
+    
+    # Influence (potential territory)
+    score += calculate_influence(state, player) * 0.2
+    
+    # Eye space (living groups)
+    score += count_eyes(state, player) * 2.0
+    
+    return score
+```
 
-## 🎯 **Exam-Style Questions**
+#### Cutoff Test
 
-### **Question 1** (15 points):
-Given the medical diagnosis KB from your slides, trace backward chaining to prove "viremia" given facts: {temperature=103, headache=True, cough=True}. Show all sub-goals and rule firings.
+Instead of terminal test, use **cutoff test** to decide when to stop searching and apply evaluation function:
 
----
+```python
+def cutoff_test(state, depth):
+    """Decide whether to stop searching"""
+    
+    # Always stop at terminal states
+    if terminal_test(state):
+        return True
+    
+    # Stop at maximum depth
+    if depth >= MAX_DEPTH:
+        return True
+    
+    # Quiescence search: don't stop in "unstable" positions
+    if is_quiet_position(state):
+        return True
+    
+    return False
 
-### **Question 2** (20 points):
-Compare forward and backward chaining for the following scenario:
-- KB: 20 rules
-- Facts: 5 initial facts
-- Goal: Prove one specific conclusion
+def is_quiet_position(state):
+    """Check if position is stable (no captures, checks, etc.)"""
+    # In chess: no checks, no captures available
+    # In go: no ko fights, no groups in atari
+    return not has_tactical_threats(state)
+```
 
-Which is more efficient? Justify with complexity analysis and example trace.
+### Key Takeaways
 
----
+**1. Game Formulation**
+- Games are perfect for AI: discrete, deterministic, clear objectives
+- Formal components: Initial state, Player, Actions, Result, Terminal-Test, Utility
 
-### **Question 3** (25 points):
-Design a backward chaining system for **academic advising**:
-- Goal: "Can student graduate?"
-- Rules: Credit requirements, GPA, prerequisites, major requirements
-- Show complete trace with backtracking
-- Handle conflicts (e.g., missing prerequisites)
+**2. Minimax Algorithm**
+- Optimal strategy: assume opponent plays optimally
+- Recursive: MAX maximizes, MIN minimizes
+- Complete and optimal, but exponential complexity
 
----
+**3. Alpha-Beta Pruning**
+- Prunes branches that can't affect final decision
+- Best case: $$O(b^{m/2})$$ - doubles search depth!
+- Move ordering is critical for efficiency
 
-## 📚 **Key Takeaways**
+**4. Evaluation Functions**
+- Estimate utility of non-terminal states
+- Must be fast, accurate, and monotonic
+- Domain-specific knowledge is key
 
-1. ✅ **Backward chaining is goal-driven**: Starts with hypothesis, finds supporting evidence
-2. ✅ **Uses depth-first search**: Explores one path completely before trying alternatives
-3. ✅ **More efficient for specific queries**: Only derives goal-relevant facts
-4. ✅ **Requires cycle detection**: Can get stuck in loops without proper handling
-5. ✅ **Best for**: Diagnosis, query answering, theorem proving, explanation generation
-6. ✅ **Contrast with forward chaining**: Different efficiency trade-offs depending on use case
+**5. Practical Considerations**
+- Quiescence search for stable positions
+- Iterative deepening for time management
+- Transposition tables for repeated positions
+- Opening books and endgame databases
+```
 
----
+This format maintains all the technical content while using Just the Docs styling conventions including proper tables, code blocks, callout boxes, and LaTeX math formatting.
+## MiniMax Algorithm
 
-## 🚀 **Practice Recommendations**
 
-1. **Trace both methods** on the same KB to see efficiency differences
-2. **Implement backward chaining** in Python with cycle detection
-3. **Study Prolog** to see backward chaining in action
-4. **Design hybrid systems** that use both forward and backward chaining
-5. **Practice explaining proofs** generated by backward chaining
-
----
-
-**You now have expert-level understanding of both Forward and Backward Chaining!** 🎓
-
-The key is knowing **when to use each method** based on your problem requirements. Practice the exercises above to master both techniques! 🌟
-
-Game
-MiniMax Algorithm
 Alpha beta Pruning
