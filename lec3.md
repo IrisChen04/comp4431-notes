@@ -1327,7 +1327,6 @@ Facts:
 
 Here's the content transcribed into Just the Docs markdown format:
 
-```markdown
 ### What Makes Games Special in AI?
 
 **Multiagent Environment**:
